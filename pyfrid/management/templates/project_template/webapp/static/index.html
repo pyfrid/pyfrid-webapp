@@ -1,0 +1,98 @@
+<html> 
+<head> 
+  <title>{{proj_name}}</title>  
+</head> 
+<body> 
+    <div id="loading-mask" style=""></div> 
+    <div id="loading"> 
+        <div id="loading-ind" class="loading-indicator">
+            {{proj_name}}&#8482;<br>
+            <img id="loading-image" src="project_static/images/ajax_indicator.gif" width="32" height="32" style="margin-left:8px; margin-right:8px;float:left;vertical-align:top;"/><br>
+            <span id="loading-msg">Loading styles and images...</span>
+        </div> 
+    </div>
+    
+     
+    <link rel="stylesheet" type="text/css" href="project_static/ext/resources/css/ext-all.css" />
+    <link rel="stylesheet" type="text/css" href="project_static/ext/examples/ux/treegrid/treegrid.css" />
+    <link rel="stylesheet" type="text/css" href="project_static/ext/examples/ux/statusbar/css/statusbar.css" />
+    
+    <link rel="stylesheet" type="text/css" href="project_static/css/app/application.css" />
+    
+    {% for path in css %}
+		<link rel="stylesheet" type="text/css" href="{{path}}" />
+	{% end %}
+    
+	<script type="text/javascript">document.getElementById('loading-msg').innerHTML = 'Loading UI Components...';</script>
+    <script type="text/javascript" src="project_static/ext/adapter/ext/ext-base-debug.js"></script>
+    <script type="text/javascript" src="project_static/ext/ext-all-debug.js"></script>
+    
+    
+    
+    <script type="text/javascript">document.getElementById('loading-msg').innerHTML = 'Loading Application...';</script>
+	<script type="text/javascript" src="project_static/ext/examples/ux/treegrid/TreeGridSorter.js"></script>
+    <script type="text/javascript" src="project_static/ext/examples/ux/treegrid/TreeGridColumnResizer.js"></script>
+    <script type="text/javascript" src="project_static/ext/examples/ux/treegrid/TreeGridNodeUI.js"></script>
+    <script type="text/javascript" src="project_static/ext/examples/ux/treegrid/TreeGridLoader.js"></script>
+    <script type="text/javascript" src="project_static/ext/examples/ux/treegrid/TreeGridColumns.js"></script>
+    <script type="text/javascript" src="project_static/ext/examples/ux/treegrid/TreeGrid.js"></script>
+	<script type="text/javascript" src="project_static/ext/examples/ux/statusbar/StatusBar.js"></script>
+	
+	
+	<script src="project_static/ace/src/ace.js" type="text/javascript" charset="utf-8"></script>
+    <script src="project_static/ace/src/theme-eclipse.js" type="text/javascript" charset="utf-8"></script> 
+    <script src="project_static/ace/src/mode-python.js" type="text/javascript" charset="utf-8"></script>      
+	
+	<script type="text/javascript" src="project_static/js/core/baseclasses.js"></script>
+	<script type="text/javascript" src="project_static/js/core/cmdmanager.js"></script>
+	<script type="text/javascript" src="project_static/js/core/logmanager.js"></script>
+	<script type="text/javascript" src="project_static/js/core/modulemanager.js"></script>
+	<script type="text/javascript" src="project_static/js/core/scripteditor.js"></script>
+	<script type="text/javascript" src="project_static/js/core/devicemanager.js"></script>
+	<script type="text/javascript" src="project_static/js/core/cmdmanager.js"></script>
+	
+	
+	<script type="text/javascript">document.getElementById('loading-msg').innerHTML = 'Loading Dependencies...';</script>
+	{% for path in bases %}
+		<script type="text/javascript" src="{{path}}"></script>
+	{% end %}
+	
+	<script type="text/javascript">document.getElementById('loading-msg').innerHTML = 'Loading object scripts...';</script>
+	{% for path in scripts %}
+		<script type="text/javascript" src="{{path}}"></script>
+	{% end %}	
+		
+    <script type="text/javascript">
+    // eliminate the loading indicators
+	    var loading=document.getElementById("loading");
+	    if(loading)document.body.removeChild(loading);
+	    // eliminate the loading mask so application shows
+	    var mask=document.getElementById("loading-mask");
+	    if(mask)document.body.removeChild(mask);
+    </script>
+    
+    <script type="text/javascript">
+		Ext.onReady(function(){
+	    		Ext.Ajax.disableCaching = false;
+	    		var remoteProvider=new Ext.direct.RemotingProvider({{provider_code}});
+	    		Ext.Direct.on("exception",function(e){
+	    			Ext.MessageBox.show({
+           				title: 'Communication exception',
+           				msg: e.message,
+           				buttons: Ext.MessageBox.OK,
+           				icon: Ext.MessageBox.ERROR
+       				});	
+	    		});
+				Ext.Direct.addProvider(remoteProvider);
+	    		var main_panel=new Pyfrid.{{appclass}}({
+	    			router:Pyfrid.router.{{appalias}}
+				});
+	    		var viewport = new Ext.Viewport({
+	    			layout: 'fit',
+	    			items: main_panel,
+	    		});
+	    });    
+	</script>
+	 
+</body> 
+</html>

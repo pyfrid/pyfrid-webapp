@@ -1,0 +1,2 @@
+recursive-include pyfrid/management/templates *
+recursive-include pyfrid/webapp *

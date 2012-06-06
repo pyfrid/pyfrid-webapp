@@ -1,0 +1,11 @@
+.new-macro-icon {
+    background-image:url(/project_static/images/icons/new.png) !important;
+}
+
+.open-macro-icon {
+    background-image:url(/project_static/images/icons/folder.png) !important;
+}
+
+.save-macro-icon {
+    background-image:url(/project_static/images/icons/save.png) !important;
+}
