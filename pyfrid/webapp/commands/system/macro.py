@@ -17,7 +17,7 @@ import time
 from pyfrid.webapp.core.router import BaseObjectWebRouter, authenticated
     
 class MacroCommandWebRouter(BaseObjectWebRouter):
-    
+    """..."""
     def get_macro_list(self, handler):
         with authenticated(handler, self.obj.app):
             curdir=self.obj.macropath

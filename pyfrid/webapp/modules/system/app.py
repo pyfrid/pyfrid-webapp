@@ -77,6 +77,7 @@ class InfoModuleTree(BaseObjectTree):
     group_node=InfoGroupNode
     
 class ApplicationWebRouter(BaseObjectWebRouter):
+    """..."""
     
     def __init__(self, *args, **kwargs):
         super(ApplicationWebRouter, self).__init__(*args, **kwargs)

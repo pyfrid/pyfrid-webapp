@@ -16,7 +16,7 @@ from pyfrid.webapp.core.router import BaseTreeWebRouter
 from pyfrid.webapp.core.objtree import DeviceNode, BaseObjectTree
 
 class CountDeviceNode(DeviceNode):
-    
+    """..."""
     def __call__(self):
         data=super(CountDeviceNode, self).__call__()
         data["units"]="sec"

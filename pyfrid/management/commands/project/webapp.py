@@ -35,11 +35,17 @@ from pyfrid.management.core.project.appcmd import BaseApplicationCommand
 from pyfrid.webapp.core.registry import WebRegistry
 
 class BaseRequestHandler(tornado.web.RequestHandler):
+    """Base class for all type of requests"""
     
     def get_current_user(self):
+        """Every request contains user and password which are encrypted and saved in browser cookies after authentication.
+        This function decrypt user and password and returns as a tuple.
+        """
         return (self.get_secure_cookie("user"), self.get_secure_cookie("pass"))
    
 class MainRequestHandler(BaseRequestHandler):
+    """This is a class for a main request handler of a GET type. This handler renders index.html file substituting 
+    *index_args* arguments which are a returned by the property of web application."""
                            
     def get(self):
         try:
@@ -48,12 +54,11 @@ class MainRequestHandler(BaseRequestHandler):
         except Exception:
             traceback.print_exc()
             raise tornado.web.HTTPError(403)
-        
-        def extract_scripts(self, container, result):
-            for _, item in container.iteritems():
-                result.append(item["path"])
 
 class RemoteRequestHandler(BaseRequestHandler):
+    """Base class for remote request handler. This handler is a part of RPC protocol, communication protocol between
+    web-interface part which is running in users's browser and web-server. This request handler reads the request body and
+    invokes *process_remote_request* function of web-application object."""
     
     def post(self):
         try:
@@ -66,7 +71,11 @@ class RemoteRequestHandler(BaseRequestHandler):
             raise tornado.web.HTTPError(403) 
 
 class ScriptRequestHandler(BaseRequestHandler):
-    
+    """This is a request handler which renders .js files which correspond to commands, devices and modules.
+    Each javascript file expects several template parameters like *webscript* - full address of the script, *webclass* -
+    name of the class, which is normally the same as python class of the object and *webdata* - static data for this interface.
+    This static data is returned by *get_static_data* of the web-router.
+    """
     def get(self, name):
         try:
             self.set_header("Content-Type", "application/javascript")
@@ -80,7 +89,10 @@ class ScriptRequestHandler(BaseRequestHandler):
             raise tornado.web.HTTPError(403)
         
 class AppEventHandler(tornado.websocket.WebSocketHandler):
-
+    """Class for application events handler, websocket handler which, when opened, connects system module's signals
+    to appropriate slots. This slot functions send messages to the application interface
+     which reacts on them in different ways."""
+    
     def open(self):
         self.application.appmod.auth_module.after_login_signal.connect(self.on_user_changed)
         self.application.appmod.auth_module.after_logout_signal.connect(self.on_user_changed)
@@ -137,6 +149,8 @@ class AppEventHandler(tornado.websocket.WebSocketHandler):
         self.application.appmod.logger_module.exception_record_signal.disconnect(self.on_logmessage)
       
 class WebApplication(tornado.web.Application):
+    """Web application class is inherited from the standard tornado Application. WebApplication class initializes web registry, request handlers
+     and routers for remote method execution."""
     
     def __init__(self, project_path, project_name, appmod):
         self.project_name=project_name
@@ -168,6 +182,10 @@ class WebApplication(tornado.web.Application):
         self.appmod.auth_module.after_logout_signal.connect(self.update_registry)
         
     def update_registry(self, *args, **kwargs):
+        """This function updates a registry of web application. This registry contains information about class names, paths to js files
+        and routers. This update happens at initialization of web application and on
+        login or logout of user. In the latter case the web interface of application must be reconstructed according to user permissions.
+        """
         self._webregistry.clear()
         self._webregistry.register(self._appmod)
         for _, obj in self._appmod.iterate_commands(["view", "execute"]):
@@ -178,6 +196,7 @@ class WebApplication(tornado.web.Application):
             self._webregistry.register(obj)
                                         
     def get_provider_code(self, url=r"/remote", timeout=0, namespace='Pyfrid.router'):
+        """returns a javascript code of the direct reauest provider. This code is substituted to index.html template."""
         actions={}
         for name,inst in self._webregistry.iterrouters():
             methods = []
@@ -206,16 +225,19 @@ class WebApplication(tornado.web.Application):
         return self._webregistry.get_router(request["action"], exc=True)(handler,request)
     
     def process_remote_request(self,handler,request):
+        """This function processes a remote request. It is invoked by the remote request handler."""
         if type(request)!=ListType:    
             return json.dumps(self._process_request(handler,request))
         else:
             return json.dumps([self._process_request(handler,req) for req in request])
 
     def get_script_info(self, name):
+        """..."""
         return self._webregistry.get_info(name, exc=True)
 
     @property
     def index_args(self):
+        """..."""
         return {
             "css":self._webregistry.css,    
             "bases":self._webregistry.bases,
@@ -228,19 +250,22 @@ class WebApplication(tornado.web.Application):
     
     @property
     def appmod(self):
+        """..."""
         return self._appmod
         
                 
 class WebAppCommand(BaseApplicationCommand):            
-    """Command line tool class"""     
+    """Class for the web application command."""
+         
     name='webapp'
-    descr = "Starts the webapp"
+    descr = "Starts the web application"
     args = ""
     option_list=[
         make_option("-p", "--port", dest="port", type="int", default=8888, help="Interface port"),
     ]
         
     def preloop(self, *args, **kwargs):
+        """..."""
         webapp_path=os.path.join(self.projpath, "webapp")
         if not os.path.exists(webapp_path):
             self.info("Your application doesn't have 'webapp' folder. Copying necessary files...")
@@ -255,6 +280,7 @@ class WebAppCommand(BaseApplicationCommand):
         return True
                     
     def mainloop(self, *args, **options):
+        """..."""
         try:
             sys.stdout.write("Starting webserver at 127.0.0.1:{0}...\n".format(options["port"]))
             app=WebApplication(self.projpath, self.projname, self.appmod)
@@ -265,7 +291,6 @@ class WebAppCommand(BaseApplicationCommand):
             self.info("The server was interrupted...".format(options["port"])) 
             
     def postloop(self, *args, **kwargs):
-        """Hook method executed once when the cmd_loop() method is about to return
-        """
+        """..."""
         self.appmod.call_shutdown()
         

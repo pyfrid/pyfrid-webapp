@@ -16,5 +16,6 @@ from pyfrid.webapp.core.router import BaseTreeWebRouter
 from pyfrid.webapp.core.objtree import DevicePositionTree
 
 class MoverelCommandWebRouter(BaseTreeWebRouter):
+    """..."""
     trees_info=[(DevicePositionTree, BaseTreeWebRouter.devices_iterator, "")]
     

@@ -18,6 +18,7 @@ from pyfrid.webapp.core.objtree import BaseObjectTree, ObjectNode
 from pyfrid.utils import format_value
 
 class ObjectSettingsNode(ObjectNode):
+    """..."""
     
     def __call__(self):
         data=super(ObjectSettingsNode,self).__call__()

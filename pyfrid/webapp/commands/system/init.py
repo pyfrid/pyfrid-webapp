@@ -16,6 +16,7 @@ from pyfrid.webapp.core.router import BaseTreeWebRouter
 from pyfrid.webapp.core.objtree import DeviceObjectTree, CommandObjectTree, ModuleObjectTree
 
 class InitCommandWebRouter(BaseTreeWebRouter):
+    """..."""
     trees_info=[(DeviceObjectTree,  BaseTreeWebRouter.devices_iterator,  "Devices"),
                 (CommandObjectTree, BaseTreeWebRouter.commands_iterator, "Command"),
                 (ModuleObjectTree,  BaseTreeWebRouter.modules_iterator,  "Modules")]

@@ -19,8 +19,23 @@ from pyfrid.utils import format_value
 class ObjectTreeException(Exception): pass
 
 class GroupNode(list):
+    """A class for group tree node. Being called it returns the following dictionary::
     
-    def __init__(self,name):
+                    {
+                    "id":"{0}_group_node".format(self.name),         
+                    "text":     self.name,
+                    "children": children,
+                    "type":     "group",
+                    "leaf":     False,
+                    "expanded": True,
+                    "iconCls": "default-group-icon",
+                    "cls": "default-group-cls"
+                    },
+    where *children* is a list of all nodes which belong to this group including other groups too.
+    """
+    
+    def __init__(self, name):
+        """initializes group object with the name *name*."""
         self.name=name
                 
     def __call__(self):
@@ -39,8 +54,21 @@ class GroupNode(list):
 
     
 class ObjectNode(object):
+    """A default class for any object. Its caller returns the following dictionary::
     
+             {
+             "id":"{0}_object_node".format(self.obj.alias),
+             "group":getattr(self.obj, "group", ""),
+             "text":self.obj.name,
+             "type":"object",
+             "leaf":True,
+             "checked":False,
+             "iconCls": "default-object-icon",
+             "cls": "default-object-cls"
+             }
+     """
     def __init__(self,obj):
+        """initializes node object with *obj* attribute which is a reference to a command, a device or a module"""
         self.obj=obj
         
     def __call__(self):
@@ -56,6 +84,7 @@ class ObjectNode(object):
         }  
     
 class CommandNode(ObjectNode):
+    """A class for a  command node. Its caller executes *ObjectNode* caller function and changes several attributes. """
     
     def __call__(self):
         data=super(CommandNode,self).__call__()
@@ -65,7 +94,9 @@ class CommandNode(ObjectNode):
         data["cls"]    = "default-command-cls"
         return data
     
+    
 class DeviceNode(ObjectNode):
+    """A class for a  device node. Its caller executes *ObjectNode* caller function and changes several attributes. """
     
     def __call__(self):
         data=super(DeviceNode,self).__call__()
@@ -76,6 +107,7 @@ class DeviceNode(ObjectNode):
         return data
 
 class ModuleNode(ObjectNode):
+    """A class for a module node. Its caller executes *ObjectNode* caller function and changes several attributes. """
     
     def __call__(self):
         data=super(ModuleNode,self).__call__()
@@ -85,6 +117,8 @@ class ModuleNode(ObjectNode):
         return data        
 
 class DevicePositionNode(DeviceNode):
+    """This node is used by device manager router. The caller function returns additionally to a *DeviceNode* caller
+    current position and units"""
     
     def __call__(self):
         data=super(DevicePositionNode,self).__call__()
@@ -94,6 +128,7 @@ class DevicePositionNode(DeviceNode):
         return data    
     
 class ModuleStatusNode(ModuleNode):
+    """A class for a module status used by modules-manager router. Its caller parses a module status and adds it to returned dictionary."""
     
     def __call__(self):
         data=super(ModuleStatusNode,self).__call__()
@@ -111,13 +146,19 @@ class ModuleStatusNode(ModuleNode):
         data["expanded"]=True 
         return data    
 
-    
      
 class BaseObjectTree(object):
+    """This is a base class for trees."""
+    
+    #: used node class for objects
     object_node = ObjectNode
+    
+    #: used node class for groups
     group_node   = GroupNode
     
+    
     def __init__(self, instance, iterator, root_name="root"):
+        """..."""
         self.root_name=root_name
         self.root=None
         self._instance=instance
@@ -125,6 +166,7 @@ class BaseObjectTree(object):
         self.init_tree()
     
     def init_tree(self):
+        """..."""
         self.root=self.group_node(self.root_name)
         for _, obj in self._iterator(self._instance):
             group=getattr(obj,"group","")
@@ -148,6 +190,7 @@ class BaseObjectTree(object):
                     raise
                 
     def lookup_group(self,name,root=None):
+        """..."""
         root=self.root if root==None else root
         if isinstance(root,self.group_node):
             if root.name==name:
@@ -159,12 +202,14 @@ class BaseObjectTree(object):
         return None
                         
     def add_group(self,name,root=None):
+        """..."""
         root=self.root if root==None else root
         n=self.group_node(name)
         if n!=None: root.append(n)
         return n 
                 
     def __call__(self,root=False):
+        """..."""
         tree=self.root()
         if not root:
             return tree["children"]
@@ -172,18 +217,23 @@ class BaseObjectTree(object):
             return tree
         
 class DeviceObjectTree(BaseObjectTree):
+    """..."""
     object_node=DeviceNode
 
 class CommandObjectTree(BaseObjectTree):
+    """..."""
     object_node=CommandNode
     
 class ModuleObjectTree(BaseObjectTree):
+    """..."""
     object_node=ModuleNode
 
 class DevicePositionTree(BaseObjectTree):
+    """..."""
     object_node=DevicePositionNode
 
 class ModuleStatusTree(BaseObjectTree):
+    """..."""
     object_node=ModuleStatusNode
 
     
