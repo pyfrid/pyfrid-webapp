@@ -275,8 +275,8 @@ class WebAppCommand(BaseApplicationCommand):
         static_path=os.path.join(webapp_path, "static")
         for f in os.listdir(static_path):
             if f.endswith('.zip'):
-                with zipfile.ZipFile(os.path.join(static_path, f)) as mz:
-                    mz.extractall(static_path)
+                mz=zipfile.ZipFile(os.path.join(static_path, f))
+                mz.extractall(static_path)
         return True
                     
     def mainloop(self, *args, **options):
