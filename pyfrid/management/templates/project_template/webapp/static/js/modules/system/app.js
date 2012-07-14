@@ -113,10 +113,12 @@ Pyfrid.{{webclass}} = Ext.extend(Ext.Panel,{
 	    		this.toolbar=new Ext.Toolbar();
 	    		this.commandPanel=new Ext.Panel({
 	    			scope:this,
-	    			layout:'border',
+	    			layout:'fit',
 	    			region:'center',
+	    			split:true,
 	    			items:[this.command_manager]
 	    		});
+	    		
 	    	    Ext.apply(this,{
 	    	    	id: 'main-panel',
 	    	    	layout: 'border',

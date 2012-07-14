@@ -112,12 +112,12 @@ Pyfrid.DeviceManager = Ext.extend(Pyfrid.BaseTreeGridManager, {
 							region : 'east',
 							title : 'Devices',
 							id : 'device-manager',
-							collapsible : true,
+							collapsible : false,
 							split : true,
 							width : 350,
-							minSize : 100,
-							maxSize : 800,
-							animate : false
+							animate : false,
+							margins:'3 0 3 3',
+            				cmargins:'3 3 3 3'
 						});
 				Pyfrid.DeviceManager.superclass.initComponent.apply(this,
 						arguments);

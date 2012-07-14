@@ -63,16 +63,16 @@ Pyfrid.LogManager = Ext.extend(Ext.grid.GridPanel, {
 			region: 'south',
 	        split: true,
 	        height: 100,
-	        minSize: 50,
-	        maxSize: 800,
-	        collapsible: true,
+	        collapsible: false,
 	        title: 'Output',
+	        frame: false,
 			ds: this.store, 
         	cm: cm, 
-        	title: 'Log Viewer', 
-        	frame: false, 
+        	title: 'Log Viewer',
         	autoExpandColumn: 3, 
-        	view: gridView
+        	view: gridView,
+        	margins:'3 0 3 3',
+            cmargins:'3 3 3 3'
 		});
 		
 		Pyfrid.LogManager.superclass.initComponent.apply(this, arguments);
