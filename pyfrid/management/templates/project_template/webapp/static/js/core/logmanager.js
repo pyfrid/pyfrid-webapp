@@ -37,7 +37,7 @@ Pyfrid.LogManager = Ext.extend(Ext.grid.GridPanel, {
 		});
 	
 	    var cm = new Ext.grid.ColumnModel([ 
-	        { header:"Time", dataIndex: 'time', width:100, renderer: this.convertTime        },
+	        { header:"Time", dataIndex: 'time', width:100, renderer: this.convertTime, sortable:true        },
 	        { header:"Level", dataIndex: 'level', width:55       }, 
 	        { header:"Object", dataIndex: 'object', width:100    }, 
 	        { header:"Message", width:500,  dataIndex: 'message',
@@ -79,7 +79,7 @@ Pyfrid.LogManager = Ext.extend(Ext.grid.GridPanel, {
 		
 	},
 	convertTime:function(value, metadata, record){
-		return Date(value).toString();
+		return new Date(parseFloat(value)).toString();
 	},
 	addMessage:function(data){
 		this.store.addRecords([data]);
