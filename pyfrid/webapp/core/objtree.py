@@ -42,7 +42,7 @@ class GroupNode(list):
         _children=[item() for item in self]
         children=filter(lambda x: bool(x),_children)
         return {
-                    "id":"{0}_group_node".format(self.name),         
+                    #"id":"{0}_group_node".format(self.name),         
                     "text":     self.name,
                     "children": children,
                     "type":     "group",
